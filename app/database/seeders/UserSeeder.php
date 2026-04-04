@@ -16,13 +16,14 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         // inisiasi faker
-        $faker = Faker::create('ja_JP');
+        $faker = Faker::create('id_ID');
 
         // username, name, email, password, department_id, role
         for ($i=0; $i < 20; $i++) { 
             DB::table('users')->insert([
                 'username' => $faker->username,
-                'name' => $faker->name,
+                'firstname' => $faker->firstname,
+                'lastname' => $faker->lastname,
                 'email' => $faker->email,
                 'password' => Hash::make('password'),
                 'department_id' => $faker->randomElement([1, 2, 3]),

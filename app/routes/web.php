@@ -1,37 +1,25 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/welcome', function () {
-    $data = [];
-    $data['user'] = 'John Doe';
-    return view('welcome', $data);
+Route::get('/', function () {
+    return view('welcome');
 });
 
-// Route::view('/student', 'student.index');
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::redirect('/', '/welcome');
-
-Route::get('/student/{name}', function($name) {
-    return "Hello ".$name;
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/student/{name?}', function($name = null) {
-    if(is_null($name)) {
-        return "Hello there...";
-    } else {
-        return "Hello ".$name;
-    }
-})->name('user');
+require __DIR__.'/auth.php';
 
-Route::prefix('student')
-    ->name('student.')
-    ->group(function(){
-        Route::get('/{name?}', function($name = null) {
-            if(is_null($name)) {
-                return "Hello there...";
-            } else {
-                return "Hello ".$name;
-            }
-        })->name('name');
-});
+
+// TEST CONTROLLER
+Route::get('/test', [TestController::class, 'index']);

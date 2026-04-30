@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Department;
 use App\Models\Lecturer;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\StoreLecturerRequest;
 
 class UserController extends Controller
 {
@@ -26,20 +27,20 @@ class UserController extends Controller
         return view('user_form_lecturer', compact('departments'));
     }
 
-    public function user_store_lecturer(Request $req)
+    public function user_store_lecturer(StoreLecturerRequest $req)
     {
-        $validated = $req->validate([
-            'username' => 'required|min:8',
-            'firstname' => 'required|string',
-            'lastname' => 'required|string',
-            'email' => 'required|email',
-            'password' => 'required|min:8'
-        ]);
+        // $validated = $req->validate([
+        //     'username' => 'required|min:8',
+        //     'firstname' => 'required|string',
+        //     'lastname' => 'required|string',
+        //     'email' => 'required|email',
+        //     'password' => 'required|min:8'
+        // ]);
 
-        $validated['department_id'] = $req->department_id;
-        $validated['role'] = 1;
+        // $validated['department_id'] = $req->department_id;
+        // $validated['role'] = 1;
 
-        $user = User::create($validated);
+        // $user = User::create($validated);
         
         // $user = User::create([
         //     'username' => $req->username,
@@ -51,11 +52,17 @@ class UserController extends Controller
         //     'role' => 1
         // ]);
 
-        Lecturer::create([
-            'nidn' => $req->nidn,
-            'address' => $req->address,
-            'user_id' => $user->id
-        ]);
+        // Lecturer::create([
+        //     'nidn' => $req->nidn,
+        //     'address' => $req->address,
+        //     'user_id' => $user->id
+        // ]);
+
+        $user = User::create($req->safe()->except(['nidn', 'address']));
+
+        $validationLecturer = $req->safe()->only(['nidn', 'address']);
+        $validationLecturer['user_id'] = $user->id;
+        Lecturer::create($validationLecturer);
 
         return redirect()->route('user.index');
     }

@@ -8,6 +8,8 @@ use App\Models\Department;
 use App\Models\Lecturer;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\StoreLecturerRequest;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TestMail;
 
 class UserController extends Controller
 {
@@ -16,8 +18,36 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::query()->with('department')->paginate(7);
-        // dd($users);
+        // $users = User::query()->with('department')->paginate(7);
+        // $users = User::withTrashed()->with('department')->paginate(7);
+        $users = User::onlyTrashed()->with('department')->paginate(7);
+        
+        // User::where('id', 6)->forceDelete();
+        // withTrashed() Adalah method yang menampilkan keseluruhan data beserta dengan data yang telah dihapus
+        // onlyTrashed() adalah method yang hanya menampilkan data yang telah dihapus
+        // restore() adalah method untuk mengembalikan data yang telah dihapus
+        // forceDelete() adalah method untuk menghapus data dari basis data
+        // restoreAll() adalah method untuk mengembalikan keseluruhan data yang telah dihapus
+        // forceDeleteAll() adalah methos untuk menghapus keseluruhan data data basis data.
+
+        $penerima = [
+            'penerima1@mail.com',
+            'penerima2@mail.com',
+            'penerima3@mail.com',
+            'penerima4@mail.com',
+            'penerima5@mail.com',
+            'penerima6@mail.com',
+            'penerima7@mail.com',
+            'penerima8@mail.com',
+            'penerima9@mail.com',
+            'penerima0@mail.com',
+        ];
+
+        foreach($penerima as $pen) {
+            Mail::to($pen)->send(new TestMail());
+        }
+        
+
         return view('user_index', compact('users'));
     }
 
